@@ -1,0 +1,8 @@
+# idea files
+*.iml
+
+# npm
+/node_modules
+
+# webpack generate
+/dist

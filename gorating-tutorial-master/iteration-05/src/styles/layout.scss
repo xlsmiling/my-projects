@@ -1,0 +1,13 @@
+:global {
+  .row {
+    clear: left;
+    $col-num: 12;
+    @for $i from 1 through $col-num {
+      .col_#{$i} {
+        float: left;
+        display: inline;
+        width: percentage($i / $col-num);
+      }
+    }
+  }
+}
