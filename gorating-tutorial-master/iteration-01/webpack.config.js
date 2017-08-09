@@ -1,3 +1,7 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const { HotModuleReplacementPlugin } = webpack;
+
 const config = {
   entry: `${__dirname}/src/index.js`,
   output: {
@@ -11,7 +15,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: 'es2015',
+            presets: ['es2015','react'],
           },
         }
       },
@@ -27,8 +31,20 @@ const config = {
         test: /\.scss$/,
         use: ['style-loader' ,'css-loader?modules&localIdentName=[local]-[hash:base64:4]', 'sass-loader'],
       }
-    ]
-  }
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin ({
+      template: __dirname+'/src/index.html',
+    }),
+    new HotModuleReplacementPlugin(),
+  ],
+  devtool: 'eval-source-map',
+  devServer: {
+    contentBase: `${__dirname}/dist`,
+    port: 3000,
+    hot: true,
+  },
 };
 
 module.exports = config;
