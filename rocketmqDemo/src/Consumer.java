@@ -5,6 +5,7 @@ import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.message.MessageExt;
+import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class Consumer {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("zhiHengCompany");
         consumer.setNamesrvAddr("132.228.27.63:9876");
         consumer.setInstanceName("zhiHeng");
+        // 设置为广播消费模式，不设置默认为集群模式
+        //consumer.setMessageModel(MessageModel.BROADCASTING);
         /**
          * 可以通过设置consumeMessageBatchMaxSize参数来批量接收消息，默认一条
          */

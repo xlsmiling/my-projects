@@ -3,15 +3,18 @@ const webpack = require('webpack');
 const { HotModuleReplacementPlugin } = webpack;
 
 const config = {
-  entry: `${__dirname}/src/index.js`,
+  entry: `${__dirname}/src/index.jsx`,
   output: {
     path: `${__dirname}/dist`,
     filename: 'index.bundle.js',
   },
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js[x]?$/,// /\.(js|jsx)$/
         use: {
           loader: 'babel-loader',
           options: {
