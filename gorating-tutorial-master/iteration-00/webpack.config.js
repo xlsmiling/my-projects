@@ -9,6 +9,11 @@
 
 //babel
 const config = { // ...
+    entry: `${__dirname}/src/index.jsx`,
+    output: {
+        path: `${__dirname}/dist`,
+        filename: 'index.bundle.js',
+    },
     module: {
         rules: [
             {

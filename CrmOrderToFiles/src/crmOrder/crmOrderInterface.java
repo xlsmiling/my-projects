@@ -39,10 +39,7 @@ public class crmOrderInterface {
 			binding.setTimeout(30000);
 			String queryString = "<usbdatas><item><id>"+id+"</id></item></usbdatas>";
 			String sysSource = "BT001";
-		//	System.out.println("---------"+questXml);
-			//System.out.println(id);
 			responseValue = binding.getData(sysSource,queryString);
-			//System.out.println("---------"+responseValue);
 			if(responseValue != "" && responseValue != null){
 				getReturnXml(responseValue,id);
 			}
@@ -72,52 +69,43 @@ public class crmOrderInterface {
 			StringReader read = new StringReader(xml);
 			// 创建新的输入源SAX 解析器将使用 InputSource 对象来确定如何读取 XML 输入
 			InputSource source = new InputSource(read);
-			// 创建一个新的SAXBuilder
-			//SAXBuilder sb = new SAXBuilder();
 			SAXReader saxreader = new SAXReader();
 			String custId = "";
 			String po_inst_id = "";
 			String staff_id = "";
 			String soDate = "";
-			String offer_spec_id = "";
 			String pd_spec_id = "";
 			String channel_nbr = "";
 			String action_cd = "";
 			String returnValue = "";
 			String pd_inst_id = "";
 			String serv_spec_id = "";
+			String area_code = "";
 			Document document = saxreader.read(source);
-			//System.out.println(xml);
 			List list = document.content();//.elementTextTrim("partyInfo");
 			Iterator iter = list.iterator();
-			//int i = 0;
 			if(iter.hasNext()){
 				Element element = (Element) iter.next();
-				staff_id = (element.attribute("soStaffId").getValue() == null) ? "" : element.attribute("soStaffId").getValue();
-				channel_nbr = (element.attribute("soChannelNbr").getValue() == null) ? "" : element.attribute("soChannelNbr").getValue();
+				channel_nbr = (element.attribute("agentNbr").getValue() == null) ? "" : element.attribute("agentNbr").getValue();
 				soDate = (element.attribute("soDate").getValue() == null) ? "" : element.attribute("soDate").getValue();
 				custId = (element.element("partyInfo").element("custId").getText() == null) ? "" : element.element("partyInfo").element("custId").getText();
-				//publicValue += staff_id + "|" + channel_nbr + "|" + soDate + "|" + custId +"|";
+				area_code = (element.attribute("soAreaCode").getValue() == null) ? "" : element.attribute("soAreaCode").getValue();
+				area_code = changeCode(area_code);
 				List offerAction = document.selectNodes("/OrderList/actionMsgs/offerAction");
 				Iterator iter1 = offerAction.iterator();
-				//int i = 0;
-				//System.out.println(actionMsgs.size());
 				while(iter1.hasNext()){
 					Element element1 = (Element) iter1.next();
 					po_inst_id = (element1.attribute("offerId").getValue() == null) ? "" : element1.attribute("offerId").getValue();
 					action_cd = (element1.attribute("boActionCd").getValue() == null) ? "" : element1.attribute("boActionCd").getValue();
-					offer_spec_id = (element1.attribute("offerSpecId").getValue() == null) ? "" : element1.attribute("offerSpecId").getValue();
 					if(action_cd.equals("S1")){
-						//i++;
-						//System.out.println(i);
+						if(element1.element("staffInfo") != null){
+							staff_id = (element1.element("staffInfo").element("staffId").getText() == null) ? "" : element1.element("staffInfo").element("staffId").getText();
+						}
 						if(element1.element("new") != null){
 							if(element1.element("new").element("offerMembers") != null){
-								//System.out.println(i+"*********"+element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText());
 								pd_spec_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText();
-								//offer_spec_id = (element1.element("new").element("offerBaseInfo").element("offerSpecId").getText() == null) ? "" : element1.element("new").element("offerBaseInfo").element("offerSpecId").getText();
 								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberId").getText();
-								//returnValue = publicValue + po_inst_id + "|" + action_cd + "|" + offer_spec_id + "|" + pd_inst_id + "|" + pd_spec_id;
-								returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "";
+								returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
 								orderRepository.offer(returnValue);
 							}
 						}
@@ -132,20 +120,19 @@ public class crmOrderInterface {
 					pd_inst_id = (element2.attribute("prodId").getValue() == null) ? "" : element2.attribute("prodId").getValue();
 					action_cd = (element2.attribute("boActionCd").getValue() == null) ? "" : element2.attribute("boActionCd").getValue();
 					pd_spec_id = (element2.attribute("prodSpecId").getValue() == null) ? "" : element2.attribute("prodSpecId").getValue();
+					if(element2.element("staffInfo") != null){
+						staff_id = (element2.element("staffInfo").element("staffId").getText() == null) ? "" : element2.element("staffInfo").element("staffId").getText();
+					}
 					if(action_cd.equals("1")){
-						//returnValue = publicValue + "" + "|" + action_cd + "|" + "" + "|" + pd_inst_id + "|" + pd_spec_id;
-						returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "";
+						returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
 						orderRepository.offer(returnValue);
 					}else if(action_cd.equals("7")){
-						//System.out.println("7****"+id);
-						//System.out.println(xml);
 						if(element2.element("new") != null){
 							if(element2.element("new").element("prodServ") != null){
 								if(element2.element("new").element("prodServ").element("serv") != null){
 									if(element2.element("new").element("prodServ").element("serv").element("servInfo") != null){
 										serv_spec_id = (element2.element("new").element("prodServ").element("serv").element("servInfo").element("servSpecId").getText() == null) ? "" : element2.element("new").element("prodServ").element("serv").element("servInfo").element("servSpecId").getText();
-										//returnValue = publicValue + po_inst_id + "|" + action_cd + "|" + offer_spec_id + "|" + pd_inst_id + "|" + pd_spec_id;
-										returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + serv_spec_id + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "";
+										returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + serv_spec_id + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
 										orderRepository.offer(returnValue);
 									}
 								}
@@ -158,6 +145,26 @@ public class crmOrderInterface {
 			}
 		}catch(DocumentException e){
 			e.printStackTrace();
+		}
+	}
+
+	public static String changeCode(String areaCode){
+		switch (areaCode){
+			case "0555": return "8";
+			case "025": return "250";
+			case "0510": return "510";
+			case "0511": return "511";
+			case "0512": return "512";
+			case "0513": return "513";
+			case "0514": return "514";
+			case "0515": return "515";
+			case "0516": return "516";
+			case "0517": return "517";
+			case "0518": return "518";
+			case "0519": return "519";
+			case "0523": return "523";
+			case "0527": return "527";
+			default: return "8";
 		}
 	}
 }

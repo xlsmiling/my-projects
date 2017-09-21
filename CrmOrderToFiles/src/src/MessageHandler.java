@@ -41,8 +41,9 @@ public class MessageHandler implements Runnable {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
 

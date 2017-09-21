@@ -32,15 +32,27 @@ public class OrderRepository {
     }
 
     public void offer(String msg) {
+        //System.out.println(orderQueue.size());
         orderQueue.offer(msg);
     }
+
+//    public String take() throws InterruptedException {
+//        return orderQueue.take();
+//    }
 
     public class DataWriter implements Runnable {
         @Override
         public void run() {
-            while (true) {
-                writeData();
-            }
+        	//try {
+	            while (true) {
+					//Thread.sleep(290_000);
+
+	                writeData();
+	            }
+//        	} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
         }
         private void writeData() {
             // TODO write to hdfs
@@ -51,9 +63,14 @@ public class OrderRepository {
             rightNow.set(Calendar.MINUTE, minute);
             rightNow.set(Calendar.SECOND, 0);
             time = rightNow.getTimeInMillis();
+            //Date date = new Date();
+            //if(Long.toString(time).substring(0,10) == Long.toString(date.getTime()).substring(0,10)){
+//            if(date.compareTo(rightNow.getTime()) == 0){
             fileName = "busi_order_" + sf.format(time + 300000);
+            System.out.println("*****start****");
             System.out.println(fileName);
             createFile(fileName);
+//            }
         }
 
         private void createFile(String fileName){
@@ -63,6 +80,7 @@ public class OrderRepository {
                 //如果文件不存在，则创建新的文件
                 if(!file.exists()){
                     file.createNewFile();
+                    //System.out.println("success create file,the file is "+filenameTemp);
                 }
                 //创建文件成功后，写入内容到文件里
                 writeFileContent(filenameTemp);
@@ -74,17 +92,23 @@ public class OrderRepository {
         private void writeFileContent(String filepath) throws IOException {
             BufferedWriter out = null;
             try {
+                //Date beginDate = new Date();
                 out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filepath, true)));
                 StringBuffer conent = new StringBuffer();
                 int count = 0;
                 Date endDate;
+                //String head = "staff_id|channel_nbr|sub_time|custId|po_inst_id|action_cd|offer_spec_id|pd_inst_id|pd_spec_id";
+                //conent.append(head + "\n");
                 while(count < 1000){
                     endDate = new Date();
+                    //System.out.println("end="+endDate.getTime()+"**********start="+(date.getTime() + 30000));
                     if(endDate.getTime() < (time + 300000)) {
+                    	//System.out.println(orderQueue.take());
                         conent.append(orderQueue.take() + "\n");
                         count++;
                         if(count == 1000){
                             out.write(conent.toString());
+                            //System.out.println("!!!!!"+conent.length());
                             conent.setLength(0);// = new StringBuffer();
                             out.flush();
                         	count = 0;
@@ -92,11 +116,14 @@ public class OrderRepository {
                     }else{
                     	out.write(conent.toString());
                     	out.flush();
-                    	System.out.println("*****end!");
+                    	System.out.println("*****end****");
                         out.close();
                         return;
                     }
                 }
+//                System.out.println("!!!!!"+conent.length());
+//                out.write(conent.toString());
+//                out.flush();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
