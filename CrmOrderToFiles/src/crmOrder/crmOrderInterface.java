@@ -7,16 +7,17 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import com.alibaba.fastjson.JSONObject;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.jdom.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
+import src.InitProducer;
 import src.OrderRepository;
+import utils.initPool;
 
 /**
  * 与CRM订单接口
@@ -29,6 +30,7 @@ import src.OrderRepository;
  */
 public class crmOrderInterface {
 	private final OrderRepository orderRepository = OrderRepository.getInstance();
+	int flag = 0;
 	
 	public void callInterface(String id){
 		GeneralLocator services = new GeneralLocator();
@@ -60,7 +62,10 @@ public class crmOrderInterface {
 	 * @throws JDOMException 
 	 */
 	public void getReturnXml(String xml,String id) {
+
+
 		try{
+
 			int start = xml.indexOf("&");
 			int stop = xml.lastIndexOf(";")+1;
 			xml = xml.substring(start, stop);
@@ -81,12 +86,14 @@ public class crmOrderInterface {
 			String pd_inst_id = "";
 			String serv_spec_id = "";
 			String area_code = "";
+			String channel_id = "";
+			JSONObject jo = new JSONObject();
 			Document document = saxreader.read(source);
 			List list = document.content();//.elementTextTrim("partyInfo");
 			Iterator iter = list.iterator();
 			if(iter.hasNext()){
 				Element element = (Element) iter.next();
-				channel_nbr = (element.attribute("agentNbr").getValue() == null) ? "" : element.attribute("agentNbr").getValue();
+				//channel_nbr = (element.attribute("channelNbr").getValue() == null) ? "" : element.attribute("agentNbr").getValue();
 				soDate = (element.attribute("soDate").getValue() == null) ? "" : element.attribute("soDate").getValue();
 				custId = (element.element("partyInfo").element("custId").getText() == null) ? "" : element.element("partyInfo").element("custId").getText();
 				area_code = (element.attribute("soAreaCode").getValue() == null) ? "" : element.attribute("soAreaCode").getValue();
@@ -95,18 +102,83 @@ public class crmOrderInterface {
 				Iterator iter1 = offerAction.iterator();
 				while(iter1.hasNext()){
 					Element element1 = (Element) iter1.next();
-					po_inst_id = (element1.attribute("offerId").getValue() == null) ? "" : element1.attribute("offerId").getValue();
+					po_inst_id = (element1.attribute("offerSpecId").getValue() == null) ? "" : element1.attribute("offerSpecId").getValue();
 					action_cd = (element1.attribute("boActionCd").getValue() == null) ? "" : element1.attribute("boActionCd").getValue();
 					if(action_cd.equals("S1")){
 						if(element1.element("staffInfo") != null){
-							staff_id = (element1.element("staffInfo").element("staffId").getText() == null) ? "" : element1.element("staffInfo").element("staffId").getText();
+							staff_id = (element1.element("staffInfo").element("staffNumber").getText() == null) ? "" : element1.element("staffInfo").element("staffNumber").getText();
+							channel_nbr = (element1.element("staffInfo").element("channelNbr").getText() == null) ? "" : element1.element("staffInfo").element("channelNbr").getText();
+							channel_id = initPool.returnChannelId(channel_nbr);
 						}
 						if(element1.element("new") != null){
 							if(element1.element("new").element("offerMembers") != null){
 								pd_spec_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText();
-								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberId").getText();
-								returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
+								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText();
+								returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_id + "|" + "" + "|" + area_code;
 								orderRepository.offer(returnValue);
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+								jo.put("pd_spec_id", pd_spec_id);
+								jo.put("serv_spec_id", "");
+								jo.put("action_cd", action_cd);
+								jo.put("sub_time", soDate);
+								jo.put("staff_id", staff_id);
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
+							}
+						}
+					}else if(action_cd.equals("S2")){
+						if(element1.element("staffInfo") != null){
+							staff_id = (element1.element("staffInfo").element("staffId").getText() == null) ? "" : element1.element("staffInfo").element("staffId").getText();
+							channel_nbr = (element1.element("staffInfo").element("channelNbr").getText() == null) ? "" : element1.element("staffInfo").element("channelNbr").getText();
+							channel_id = initPool.returnChannelId(channel_nbr);
+						}
+						if(element1.element("old") != null){
+							if(element1.element("old").element("offerMembers") != null){
+								pd_spec_id = (element1.element("old").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("old").element("offerMembers").element("offerMember").element("memberSpecId").getText();
+								pd_inst_id = (element1.element("old").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("old").element("offerMembers").element("offerMember").element("prodInstId").getText();
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+								jo.put("pd_spec_id", pd_spec_id);
+								jo.put("serv_spec_id", "");
+								jo.put("action_cd", action_cd);
+								jo.put("sub_time", soDate);
+								jo.put("staff_id", staff_id);
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
+							}
+						}
+					}else if(action_cd.equals("S3")){
+						if(element1.element("staffInfo") != null){
+							staff_id = (element1.element("staffInfo").element("staffNumber").getText() == null) ? "" : element1.element("staffInfo").element("staffNumber").getText();
+							channel_nbr = (element1.element("staffInfo").element("channelNbr").getText() == null) ? "" : element1.element("staffInfo").element("channelNbr").getText();
+							channel_id = initPool.returnChannelId(channel_nbr);
+						}
+						if(element1.element("new") != null){
+							if(element1.element("new").element("offerMembers") != null){
+								pd_spec_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText();
+								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText();
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+								jo.put("pd_spec_id", pd_spec_id);
+								jo.put("serv_spec_id", "");
+								jo.put("action_cd", action_cd);
+								jo.put("sub_time", soDate);
+								jo.put("staff_id", staff_id);
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
 							}
 						}
 					}else{
@@ -121,18 +193,21 @@ public class crmOrderInterface {
 					action_cd = (element2.attribute("boActionCd").getValue() == null) ? "" : element2.attribute("boActionCd").getValue();
 					pd_spec_id = (element2.attribute("prodSpecId").getValue() == null) ? "" : element2.attribute("prodSpecId").getValue();
 					if(element2.element("staffInfo") != null){
-						staff_id = (element2.element("staffInfo").element("staffId").getText() == null) ? "" : element2.element("staffInfo").element("staffId").getText();
+						staff_id = (element2.element("staffInfo").element("staffNumber").getText() == null) ? "" : element2.element("staffInfo").element("staffNumber").getText();
+						channel_nbr = (element2.element("staffInfo").element("channelNbr").getText() == null) ? "" : element2.element("staffInfo").element("channelNbr").getText();
+						channel_id = initPool.returnChannelId(channel_nbr);
 					}
 					if(action_cd.equals("1")){
-						returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
+						returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_id + "|" + "" + "|" + area_code;
 						orderRepository.offer(returnValue);
+
 					}else if(action_cd.equals("7")){
 						if(element2.element("new") != null){
 							if(element2.element("new").element("prodServ") != null){
 								if(element2.element("new").element("prodServ").element("serv") != null){
 									if(element2.element("new").element("prodServ").element("serv").element("servInfo") != null){
 										serv_spec_id = (element2.element("new").element("prodServ").element("serv").element("servInfo").element("servSpecId").getText() == null) ? "" : element2.element("new").element("prodServ").element("serv").element("servInfo").element("servSpecId").getText();
-										returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + serv_spec_id + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_nbr + "|" + "" + "|" + area_code;
+										returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + serv_spec_id + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_id + "|" + "" + "|" + area_code;
 										orderRepository.offer(returnValue);
 									}
 								}
@@ -145,6 +220,13 @@ public class crmOrderInterface {
 			}
 		}catch(DocumentException e){
 			e.printStackTrace();
+			if(flag < 3){
+				callInterface(id);
+				flag++;
+			}else{
+				flag = 0;
+				return;
+			}
 		}
 	}
 
