@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="getJfFile">
+    <output-path>$PROJECT_DIR$/../../shell和jars</output-path>
+    <root id="archive" name="getJfFile.jar">
+      <element id="module-output" name="JfGetFiles" />
+    </root>
+  </artifact>
+</component>
