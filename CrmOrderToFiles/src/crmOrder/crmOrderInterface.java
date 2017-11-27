@@ -118,20 +118,84 @@ public class crmOrderInterface {
 								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText();
 								returnValue = pd_inst_id + "|" + custId + "|" + po_inst_id + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_id + "|" + "" + "|" + area_code;
 								orderRepository.offer(returnValue);
+<<<<<<< HEAD
 								jo.put("prd_inst_id", pd_inst_id);
 								jo.put("cust_id", custId);
 								jo.put("product_code", po_inst_id);
+=======
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
 								jo.put("pd_spec_id", pd_spec_id);
 								jo.put("serv_spec_id", "");
 								jo.put("action_cd", action_cd);
 								jo.put("sub_time", soDate);
 								jo.put("staff_id", staff_id);
+<<<<<<< HEAD
 								jo.put("create_time", getNowTime());
 								jo.put("channel_id", channel_id);
 								jo.put("opr_pos_code", "");
 								jo.put("city_id", area_code);
 								//InitProducer.send(jo.toString());
 								InitProducer.sendToMarket(jo.toString());
+=======
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
+							}
+						}
+					}else if(action_cd.equals("S2")){
+						if(element1.element("staffInfo") != null){
+							staff_id = (element1.element("staffInfo").element("staffId").getText() == null) ? "" : element1.element("staffInfo").element("staffId").getText();
+							channel_nbr = (element1.element("staffInfo").element("channelNbr").getText() == null) ? "" : element1.element("staffInfo").element("channelNbr").getText();
+							channel_id = initPool.returnChannelId(channel_nbr);
+						}
+						if(element1.element("old") != null){
+							if(element1.element("old").element("offerMembers") != null){
+								pd_spec_id = (element1.element("old").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("old").element("offerMembers").element("offerMember").element("memberSpecId").getText();
+								pd_inst_id = (element1.element("old").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("old").element("offerMembers").element("offerMember").element("prodInstId").getText();
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+								jo.put("pd_spec_id", pd_spec_id);
+								jo.put("serv_spec_id", "");
+								jo.put("action_cd", action_cd);
+								jo.put("sub_time", soDate);
+								jo.put("staff_id", staff_id);
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
+							}
+						}
+					}else if(action_cd.equals("S3")){
+						if(element1.element("staffInfo") != null){
+							staff_id = (element1.element("staffInfo").element("staffNumber").getText() == null) ? "" : element1.element("staffInfo").element("staffNumber").getText();
+							channel_nbr = (element1.element("staffInfo").element("channelNbr").getText() == null) ? "" : element1.element("staffInfo").element("channelNbr").getText();
+							channel_id = initPool.returnChannelId(channel_nbr);
+						}
+						if(element1.element("new") != null){
+							if(element1.element("new").element("offerMembers") != null){
+								pd_spec_id = (element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("memberSpecId").getText();
+								pd_inst_id = (element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText() == null) ? "" : element1.element("new").element("offerMembers").element("offerMember").element("prodInstId").getText();
+								jo.put("pd_inst_id", pd_inst_id);
+								jo.put("cust_id", custId);
+								jo.put("po_inst_id", po_inst_id);
+								jo.put("pd_spec_id", pd_spec_id);
+								jo.put("serv_spec_id", "");
+								jo.put("action_cd", action_cd);
+								jo.put("sub_time", soDate);
+								jo.put("staff_id", staff_id);
+								jo.put("create_time", soDate);
+								jo.put("channel_id", channel_id);
+								jo.put("opr_pos_code", "");
+								jo.put("area_code", area_code);
+								InitProducer.send(jo.toString());
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
 							}
 						}
 					}
@@ -205,6 +269,7 @@ public class crmOrderInterface {
 					if(action_cd.equals("1")){
 						returnValue = pd_inst_id + "|" + custId + "|" + "" + "|" + pd_spec_id + "|" + "" + "|" + action_cd + "|" + soDate + "|" + staff_id + "|" + soDate + "|" + channel_id + "|" + "" + "|" + area_code;
 						orderRepository.offer(returnValue);
+<<<<<<< HEAD
 						jo.put("prd_inst_id", pd_inst_id);
 						jo.put("cust_id", custId);
 						jo.put("product_code", "");
@@ -218,6 +283,8 @@ public class crmOrderInterface {
 						jo.put("opr_pos_code", "");
 						jo.put("city_id", area_code);
 						InitProducer.sendToMarket(jo.toString());
+=======
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
 
 					}else if(action_cd.equals("7")){
 						if(element2.element("new") != null){

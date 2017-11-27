@@ -1,7 +1,10 @@
 import utils.initPool;
+<<<<<<< HEAD
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+=======
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
 
 public class test{
 
@@ -13,6 +16,7 @@ public class test{
 //		String a = "0523";
 //		System.out.println(changeCode(a));
 		//new initPool();
+<<<<<<< HEAD
 //		for (int i = 0; i < 10; i++) {
 //			new Thread(new testThread()).start();
 //		}
@@ -23,6 +27,15 @@ public class test{
 	}
 
 
+=======
+		for (int i = 0; i < 10; i++) {
+			new Thread(new testThread()).start();
+		}
+
+	}
+
+
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
 //	public static String changeCode(String code){
 //		switch (code){
 //			case "0555": return "8";

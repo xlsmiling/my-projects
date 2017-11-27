@@ -1,6 +1,10 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="CrmOrderToFiles">
+<<<<<<< HEAD
     <output-path>$PROJECT_DIR$/../../shell和jars</output-path>
+=======
+    <output-path>$USER_HOME$/Desktop/temp</output-path>
+>>>>>>> d5134277ce79e3fb9eb5918af69237cf92494cc0
     <root id="archive" name="CrmOrderToFiles.jar">
       <element id="module-output" name="CrmOrderToFiles" />
     </root>
