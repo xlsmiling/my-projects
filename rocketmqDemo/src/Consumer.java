@@ -17,9 +17,9 @@ public class Consumer {
          * 一个应用创建一个Consumer，由应用来维护此对象，可以设置为全局对象或者单例<br>
          * 注意：ConsumerGroupName需要由应用来保证唯一
          */
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("zhiHengCompany");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("cssGroup");
         consumer.setNamesrvAddr("132.228.27.63:9876");
-        consumer.setInstanceName("zhiHeng");
+        consumer.setInstanceName("css");
         // 设置为广播消费模式，不设置默认为集群模式
         //consumer.setMessageModel(MessageModel.BROADCASTING);
         /**
@@ -39,7 +39,7 @@ public class Consumer {
          * 订阅指定topic下所有消息<br>
          * 注意：一个consumer对象可以订阅多个topic
          */
-        consumer.subscribe("C3Output2OthersTopic-02cc95f8ff1f408e984958361da84f0f", "6");
+        consumer.subscribe("C3Output2Css", "*");
         //consumer.subscribe("TopicTest3", "*");
         /**
          * 注册消费的监听
